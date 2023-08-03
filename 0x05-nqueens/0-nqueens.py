@@ -1,91 +1,91 @@
 #!/usr/bin/python3
+'''N Queens Challenge'''
 
-"""Program that solves the N queens problem"""
 import sys
 
 
 if __name__ == '__main__':
-  code = sys.argv
-  if len(code) != 2:
-    print("Usage: nqueens N")
-    sys.exit(1)
-    
-  try:
-    n = int(code[1])
-  except ValueError:
-    print('N must be a number')
-    exit(1)
-    
-  if n < 4:
-    print('N must be at least 4')
-    exit(1)
-    
-  column = 0
-  row = 0
-  stop = False
-  result = []
-  queenPosition = []
-    
-  while row < n:
-    reverse = False
-    while column < n:
-        
-      safe = True
-      for post in queenPosition:
-        p = post[1]
-        if (p == column or p + (row-post[0]) == column or p - (row-post[0]) == column):
-          safe = False
-          break
-        
-        if not safe:
-          if column == n - 1:
-            reverse = True
-            break
-          column = column + 1
-          continue
-        
-        
-        posts = [row, column]
-        queenPosition.append(posts)
-        
-        if row == n -1:
-          result.append(queenPosition[:])
-          for post in queenPosition:
-            if post[1] < n - 1:
-              row = post[0]
-              column = post[1]
-          for r in range(n - row):
-            queenPosition.pop()
-          if row == n - 1 and column == n - 1:
-            queenPosition = []
-            stop = True
-            
-          row = row - 1
-          column = column + 1
-          
-        else:
-          column = 0
-        break
-      
-      if stop:
-        break
-      
-      if reverse:
-        row = row - 1
-        while row >= 0:
-          column = queenPosition[row][1] + 1
-          del queenPosition[row]
-          if column < n:
-            break
-          row = row - 1
-        if row < 0:
-          break
-        continue
-      row = row + 1
-      
-    for idx, val in enumerate(result):
-      if idx == len(result) - 1:
-        print(val)
-      else:
-        print(val)
+    if len(sys.argv) != 2:
+        print("Usage: nqueens N")
+        sys.exit(1)
 
+    try:
+        n = int(sys.argv[1])
+    except ValueError:
+        print('N must be a number')
+        exit(1)
+
+    if n < 4:
+        print('N must be at least 4')
+        exit(1)
+
+    solutions = []
+    placed_queens = []  # coordinates format [row, column]
+    stop = False
+    r = 0
+    c = 0
+
+    # iterate thru rows
+    while r < n:
+        goback = False
+        # iterate thru columns
+        while c < n:
+            # check is current column is safe
+            safe = True
+            for cord in placed_queens:
+                col = cord[1]
+                if(col == c or col + (r-cord[0]) == c or
+                        col - (r-cord[0]) == c):
+                    safe = False
+                    break
+
+            if not safe:
+                if c == n - 1:
+                    goback = True
+                    break
+                c += 1
+                continue
+
+            # place queen
+            cords = [r, c]
+            placed_queens.append(cords)
+            # if last row, append solution and reset all to last unfinished row
+            # and last safe column in that row
+            if r == n - 1:
+                solutions.append(placed_queens[:])
+                for cord in placed_queens:
+                    if cord[1] < n - 1:
+                        r = cord[0]
+                        c = cord[1]
+                for i in range(n - r):
+                    placed_queens.pop()
+                if r == n - 1 and c == n - 1:
+                    placed_queens = []
+                    stop = True
+                r -= 1
+                c += 1
+            else:
+                c = 0
+            break
+        if stop:
+            break
+        # on fail: go back to previous row
+        # and continue from last safe column + 1
+        if goback:
+            r -= 1
+            while r >= 0:
+                c = placed_queens[r][1] + 1
+                del placed_queens[r]  # delete previous queen coordinates
+                if c < n:
+                    break
+                r -= 1
+            if r < 0:
+                break
+            continue
+        r += 1
+
+    for idx, val in enumerate(solutions):
+        if idx == len(solutions) - 1:
+            print(val, end='')
+        else:
+            print(val)
